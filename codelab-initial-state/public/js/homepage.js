@@ -19,7 +19,7 @@ import {
   HeaderIcon,
   HeaderBar,
   ModalDialog,
-  CartList,
+  CartList
 } from "./view.js";
 
 export async function onDocumentReady(firebaseApp) {
@@ -59,7 +59,7 @@ class HomePage {
       }),
       new HeaderIcon("cart", "shopping_cart", "N/A", () => {
         this.showCart();
-      }),
+      })
     ]);
 
     this.itemCardList = new ItemCardList(async (id, data) => {
@@ -76,7 +76,7 @@ class HomePage {
     this.el = el("div.header-page", [
       this.headerBar,
       this.itemCardList,
-      this.modalDialog,
+      this.modalDialog
     ]);
 
     this.listenForAuth();
@@ -84,7 +84,7 @@ class HomePage {
   }
 
   listenForAuth() {
-    this.auth.onAuthStateChanged((user) => {
+    this.auth.onAuthStateChanged(user => {
       console.log(`auth.currentUser = ${JSON.stringify(user)}`);
       const signedIn = user !== null;
       this.setSignedIn(signedIn);
@@ -92,11 +92,9 @@ class HomePage {
   }
 
   listenForItems() {
-    this.db.collection("items").onSnapshot((items) => {
+    this.db.collection("items").onSnapshot(items => {
       if (items.size === 0) {
-        console.warn(
-          "No items in the database ... did you remember to start the emulators with --import?"
-        );
+        console.warn("No items in the database ... did you remember to start the emulators with --import?");
       }
 
       this.itemCardList.setItems(items);
@@ -117,14 +115,14 @@ class HomePage {
     const cartRef = this.db.collection("carts").doc(uid);
     await cartRef.set(
       {
-        ownerUID: uid,
+        ownerUID: uid
       },
       { merge: true }
     );
 
     // Listen for updates to the cart
     // TODO: Unsub from this as well
-    this.cartUnsub = cartRef.onSnapshot((cart) => {
+    this.cartUnsub = cartRef.onSnapshot(cart => {
       console.log("cart", cart.data());
 
       const total = cart.data().totalPrice || 0;
@@ -133,9 +131,7 @@ class HomePage {
     });
 
     // Listen for updates to cart items
-    this.cartItemsUnsub = cartRef.collection("items").onSnapshot((items) => {
-      console.log("items are: " + items);
-      console.log(items);
+    this.cartItemsUnsub = cartRef.collection("items").onSnapshot(items => {
       this.setCartItems(items);
     });
   }
@@ -150,12 +146,10 @@ class HomePage {
 
   setSignedIn(signedIn) {
     if (signedIn) {
-      console.log("you are signed in");
       this.headerBar.setIconText("sign_in", "Sign Out");
       this.headerBar.setIconEnabled("cart", true);
       this.listenForCart(this.auth.currentUser.uid);
     } else {
-      console.log("you are signed out");
       this.headerBar.setIconText("sign_in", "Sign In");
       this.headerBar.setIconText("cart", "N/A");
       this.headerBar.setIconEnabled("cart", false);
@@ -167,22 +161,17 @@ class HomePage {
     let itemIds;
 
     if (items) {
-      this.cartItems = items.docs.map((doc) => doc.data());
-      itemIds = items.docs.map((doc) => doc.id);
-      console.log("item not empty");
-      console.log(this.cartItems);
-      console.log(itemIds);
-      console.log(items);
+      this.cartItems = items.docs.map(doc => doc.data());
+      itemIds = items.docs.map(doc => doc.id);
     } else {
       this.cartItems = [];
       itemIds = [];
     }
 
     // For any item in the cart, we disable the add button
-    this.itemCardList.getAll().forEach((itemCard) => {
+    this.itemCardList.getAll().forEach(itemCard => {
       const inCart = itemIds.indexOf(itemCard.id) >= 0;
       itemCard.setAddEnabled(!inCart);
-      console.log("item empty");
     });
   }
 
@@ -191,6 +180,7 @@ class HomePage {
       this.showError("You must be signed in!");
       return;
     }
+
     console.log("addToCart", id, JSON.stringify(itemData));
     return this.db
       .collection("carts")
@@ -205,7 +195,7 @@ class HomePage {
       return;
     }
 
-    const items = this.cartItems.map((doc) => `${doc.name} - ${doc.price}`);
+    const items = this.cartItems.map(doc => `${doc.name} - ${doc.price}`);
     this.modalDialog.setContent(new CartList(items));
     this.modalDialog.show();
   }
