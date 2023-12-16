@@ -224,6 +224,8 @@ describe("adding an item to the cart recalculates the cart total. ", () => {
 
     const aliceCartRef = db.doc("carts/alice");
     await aliceCartRef.set({ ownerUID: "alice", totalPrice: 0 });
+
+    //  Trigger calculateCart by adding items to the cart
     const aliceItemsRef = aliceCartRef.collection("items");
     await aliceItemsRef.doc("doc1").set({ name: "nectarine", price: 2.99 });
     await aliceItemsRef.doc("doc2").set({ name: "grapefruit", price: 6.99 });
@@ -241,7 +243,6 @@ describe("adding an item to the cart recalculates the cart total. ", () => {
         // When the `itemCount`and `totalPrice` match the expectations for the
         // two items added, the promise resolves, and the test passes.
         if (
-          snap.exists &&
           snap.data().itemCount === expectedCount &&
           snap.data().totalPrice === expectedTotal
         ) {

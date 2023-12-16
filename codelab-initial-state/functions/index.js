@@ -48,8 +48,10 @@ exports.calculateCart = functions.firestore
         itemCount,
       });
 
-      console.log("updated successfully!");
+      // OPTIONAL LOGGING HERE
+      console.log("Cart total successfully recalculated: ", totalPrice);
     } catch (err) {
+      // OPTIONAL LOGGING HERE
       console.warn("update error", err);
     }
   });
