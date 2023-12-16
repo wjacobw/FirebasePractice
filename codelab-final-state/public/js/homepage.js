@@ -163,9 +163,12 @@ class HomePage {
     if (items) {
       this.cartItems = items.docs.map(doc => doc.data());
       itemIds = items.docs.map(doc => doc.id);
+      console.log("item not empty");
+      console.log(this.cartItems);
     } else {
       this.cartItems = [];
       itemIds = [];
+      console.log("item empty");
     }
 
     // For any item in the cart, we disable the add button
